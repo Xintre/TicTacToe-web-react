@@ -1,25 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { Stack } from "@mui/material";
+
+import GameScreen from "./GameScreen";
+import Header from "./Header";
+import MenuScreen from "./MenuScreen";
+
+enum AppScreen {
+  menu = "Menu",
+  game = "Game",
+}
 
 function App() {
+  const [screen, setScreen] = useState<AppScreen>(AppScreen.menu);
+
+  const onRestart = () => {};
+
+  const onBackToMenu = () => {};
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Stack>
+      <Header
+        onRestart={onRestart}
+        onBackToMenu={onBackToMenu}
+        screenTitle={screen}
+        hideControlButtons={screen === AppScreen.menu}
+      />
+
+      {screen === AppScreen.menu ? <MenuScreen /> : <GameScreen />}
+    </Stack>
   );
 }
 
