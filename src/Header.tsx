@@ -1,5 +1,5 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   AppBar,
   Box,
@@ -16,6 +16,8 @@ import {
 import { Refresh, Settings } from "@mui/icons-material";
 
 import icLauncher from "./img/ic_launcher.png";
+import { AppContext } from "./context/AppContext";
+import { AppScreen } from "./types/AppScreen";
 
 const pages: {
   text: string;
@@ -27,18 +29,18 @@ const pages: {
 
 export type HeaderProps = {
   screenTitle: string;
-  onBackToMenu: () => void;
   onRestart: () => void;
   hideControlButtons: boolean;
 };
 
 export default function Header({
   screenTitle,
-  onBackToMenu,
   onRestart,
   hideControlButtons,
 }: HeaderProps) {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+
+  const { setScreen } = useContext(AppContext);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -105,7 +107,7 @@ export default function Header({
             }}
           />
           <Typography variant="h6">
-            <b>Natalia's TicTacToe</b>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <b>Natalia's TicTacToe (React ⚛️)</b>&nbsp;&nbsp;|&nbsp;&nbsp;
             <em>{screenTitle}</em>
           </Typography>
 
@@ -113,7 +115,13 @@ export default function Header({
           {!hideControlButtons && (
             <div>
               <Tooltip arrow title="Settings menu">
-                <IconButton size="large" onClick={onBackToMenu} color="inherit">
+                <IconButton
+                  size="large"
+                  onClick={() => {
+                    setScreen(AppScreen.menu);
+                  }}
+                  color="inherit"
+                >
                   <Settings />
                 </IconButton>
               </Tooltip>

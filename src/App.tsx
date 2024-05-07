@@ -4,30 +4,52 @@ import { Stack } from "@mui/material";
 import GameScreen from "./GameScreen";
 import Header from "./Header";
 import MenuScreen from "./MenuScreen";
-
-enum AppScreen {
-  menu = "Menu",
-  game = "Game",
-}
+import {
+  AppContext,
+  AppContextType,
+  defaultAppContextValue,
+} from "./context/AppContext";
+import { AppScreen } from "./types/AppScreen";
 
 function App() {
-  const [screen, setScreen] = useState<AppScreen>(AppScreen.menu);
+  const [appContextValue, setAppContextValue] = useState<AppContextType>(
+    defaultAppContextValue
+  );
 
   const onRestart = () => {};
 
-  const onBackToMenu = () => {};
-
   return (
-    <Stack>
-      <Header
-        onRestart={onRestart}
-        onBackToMenu={onBackToMenu}
-        screenTitle={screen}
-        hideControlButtons={screen === AppScreen.menu}
-      />
+    <AppContext.Provider
+      value={{
+        ...appContextValue,
+        setMapSize: (newValue) => {
+          setAppContextValue({
+            ...appContextValue,
+            mapSize: newValue,
+          });
+        },
+        setScreen: (newScreen) => {
+          setAppContextValue({
+            ...appContextValue,
+            screen: newScreen,
+          });
+        },
+      }}
+    >
+      <Stack>
+        <Header
+          onRestart={onRestart}
+          screenTitle={appContextValue.screen}
+          hideControlButtons={appContextValue.screen === AppScreen.menu}
+        />
 
-      {screen === AppScreen.menu ? <MenuScreen /> : <GameScreen />}
-    </Stack>
+        {appContextValue.screen === AppScreen.menu ? (
+          <MenuScreen />
+        ) : (
+          <GameScreen />
+        )}
+      </Stack>
+    </AppContext.Provider>
   );
 }
 
