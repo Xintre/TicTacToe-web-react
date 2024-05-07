@@ -99,6 +99,7 @@ export default function MenuScreen({}: MenuScreenProps) {
       <Button
         size="large"
         variant="contained"
+        color="primary"
         disabled={isMapSizeInvalid}
         onClick={() => {
           setScreen(AppScreen.game);
