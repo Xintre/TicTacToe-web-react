@@ -57,7 +57,9 @@ export default function MenuScreen({}: MenuScreenProps) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        gap: "1rem",
+        gap: "2rem",
+        height: "100%",
+        flexDirection: "column",
       }}
     >
       <TextField
@@ -95,6 +97,8 @@ export default function MenuScreen({}: MenuScreenProps) {
       />
 
       <Button
+        size="large"
+        variant="contained"
         disabled={isMapSizeInvalid}
         onClick={() => {
           setScreen(AppScreen.game);

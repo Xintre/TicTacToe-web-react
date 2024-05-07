@@ -36,7 +36,7 @@ function App() {
         },
       }}
     >
-      <Stack>
+      <Stack style={{ height: "100%" }}>
         <Header
           onRestart={onRestart}
           screenTitle={appContextValue.screen}
