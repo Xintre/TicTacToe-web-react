@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { ButtonBase, Typography } from "@mui/material";
+import { ButtonBase, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { Container } from "@mui/system";
 import { Map, Set } from "immutable";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -28,6 +28,8 @@ type CellIndex = Map<"row" | "col", number>;
 export default function GameScreen() {
   const { mapSize, setOnRestartGameListener } = useContext(AppContext);
   const { enqueueSnackbar } = useSnackbar();
+  const theme = useTheme();
+  const isSmOrDown = useMediaQuery(theme.breakpoints.down("md"));
 
   const [gameFinished, setGameFinished] = useState(false);
   const [userTurn, setUserTurn] = useState(UserTurn.A);
@@ -38,6 +40,20 @@ export default function GameScreen() {
     Set<CellIndex>()
   );
   const [wasMapInitialized, setWasMapInitialized] = useState(false);
+  const [easterEggDisplayFlag, setEasterEggDisplayFlag] = useState(true);
+
+  // easter egg display flag interval setup / cleanup effect
+  useEffect(() => {
+    if (easterEggMode) {
+      let interval = setInterval(() => {
+        setEasterEggDisplayFlag(!easterEggDisplayFlag);
+      }, 1500);
+
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [easterEggDisplayFlag, easterEggMode]);
 
   const [
     gameContainerRef,
@@ -278,16 +294,23 @@ export default function GameScreen() {
       style={{
         height: "100%",
         display: "flex",
-        flexDirection: "row",
+        flexDirection: isSmOrDown ? "column" : "row",
         gap: 20,
       }}
     >
       <Typography
-        style={{
-          writingMode: "vertical-lr",
-          transform: "rotate(180deg)",
-          textAlign: "center",
-        }}
+        style={
+          isSmOrDown
+            ? {
+                textAlign: "center",
+                marginTop: 20,
+              }
+            : {
+                writingMode: "vertical-lr",
+                transform: "rotate(180deg)",
+                textAlign: "center",
+              }
+        }
       >
         {gameFinished
           ? allWinningIndices.isEmpty()
@@ -310,6 +333,7 @@ export default function GameScreen() {
       >
         {mapState.map((row, rowIndex) => (
           <div
+            key={rowIndex}
             style={{
               display: "flex",
               flexDirection: "row",
@@ -324,7 +348,7 @@ export default function GameScreen() {
 
               return (
                 <ButtonBase
-                  key={`${rowIndex};${colIndex}`}
+                  key={colIndex}
                   style={{
                     backgroundColor: allWinningIndices.has(
                       Map({ row: rowIndex, col: colIndex })
@@ -338,7 +362,9 @@ export default function GameScreen() {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    fontSize: (cellWidth * 2) / 3,
+                    fontSize:
+                      (cellWidth * 2) /
+                      (easterEggMode && easterEggDisplayFlag ? 7 : 3),
                     fontWeight: 600,
                   }}
                   disabled={cellDisabled}
@@ -365,7 +391,9 @@ export default function GameScreen() {
                     finishGameIfApplicable(newMapState);
                   }}
                 >
-                  {easterEggMode ? "XD" : cellState}
+                  {easterEggMode && easterEggDisplayFlag
+                    ? "( ͡° ͜ʖ ͡°)"
+                    : cellState}
                 </ButtonBase>
               );
             })}
