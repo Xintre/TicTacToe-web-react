@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { ButtonBase } from "@mui/material";
+import { ButtonBase, Typography } from "@mui/material";
 import { Container } from "@mui/system";
 import { Map, Set } from "immutable";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
@@ -29,9 +29,11 @@ export default function GameScreen() {
   const { mapSize, setOnRestartGameListener } = useContext(AppContext);
   const { enqueueSnackbar } = useSnackbar();
 
+  const [gameFinished, setGameFinished] = useState(false);
   const [userTurn, setUserTurn] = useState(UserTurn.A);
   const [mapState, setMapState] = useState<MapState>([]);
   const [easterEggMode, setEasterEggMode] = useState<boolean>(false);
+  const [gameWinner, setGameWinner] = useState<CellState>(CellState.empty);
   const [allWinningIndices, setAllWinningIndices] = useState<Set<CellIndex>>(
     Set<CellIndex>()
   );
@@ -55,7 +57,7 @@ export default function GameScreen() {
   const finishGameIfApplicable = useCallback(
     (mapState: MapState) => {
       let allWinningIndices = Set<CellIndex>(); // note: there may even be an edge case when two different conditions win at once!
-      console.log("fga: ", mapState);
+
       // check if any row is complete
       let anyRowComplete = false;
       for (let rowIndex = 0; rowIndex < mapSize; rowIndex++) {
@@ -189,6 +191,8 @@ export default function GameScreen() {
           message: `Game finished - ${gameWinner}'s won!`,
           autoHideDuration: 8000,
         });
+        setGameWinner(gameWinner);
+        setGameFinished(true);
       } else {
         let allCellsFilled = mapState.flat().every((cell) => cell !== "");
 
@@ -202,6 +206,7 @@ export default function GameScreen() {
           });
 
           allWinningIndices = Set<CellIndex>();
+          setGameFinished(true);
         }
       }
 
@@ -210,38 +215,29 @@ export default function GameScreen() {
     [mapSize, enqueueSnackbar]
   );
 
-  const prepareMap = useCallback(
-    (bInitializeMapState: boolean) => {
-      let newMapState = mapState;
-      console.log(
-        `${
-          bInitializeMapState
-            ? "Initializing an empty map"
-            : "Resizing map to one"
-        } of size ${mapSize}`
-      );
+  const prepareMap = useCallback(() => {
+    let newMapState = mapState;
+    console.log(`Initializing an empty map of size ${mapSize}`);
 
-      if (bInitializeMapState) {
-        newMapState = [];
-        setUserTurn(UserTurn.A);
-        setEasterEggMode(false);
-        setAllWinningIndices(Set<CellIndex>());
+    newMapState = [];
+    setUserTurn(UserTurn.A);
+    setEasterEggMode(false);
+    setAllWinningIndices(Set<CellIndex>());
+    setGameFinished(false);
+    setGameWinner(CellState.empty);
 
-        for (let r = 0; r < mapSize; r++) {
-          let rowArr = [];
+    for (let r = 0; r < mapSize; r++) {
+      let rowArr = [];
 
-          for (let c = 0; c < mapSize; c++) {
-            rowArr.push(CellState.empty);
-          }
-
-          newMapState.push(rowArr);
-        }
+      for (let c = 0; c < mapSize; c++) {
+        rowArr.push(CellState.empty);
       }
 
-      setMapState(newMapState);
-    },
-    [mapSize, mapState]
-  );
+      newMapState.push(rowArr);
+    }
+
+    setMapState(newMapState);
+  }, [mapSize, mapState]);
 
   console.log("Rendering with map state", mapState);
 
@@ -254,7 +250,7 @@ export default function GameScreen() {
     ) {
       console.log("Initializing map...");
 
-      prepareMap(true);
+      prepareMap();
       setWasMapInitialized(true);
     }
   }, [gameContainerWidth, gameContainerHeight, prepareMap, wasMapInitialized]);
@@ -279,79 +275,103 @@ export default function GameScreen() {
 
   return (
     <Container
-      ref={gameContainerRef}
       style={{
         height: "100%",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         gap: 20,
-        maxHeight: "90vh",
-        justifyContent: "center",
       }}
     >
-      {mapState.map((row, rowIndex) => (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            gap: "1rem",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {row.map((cellState, colIndex) => {
-            const cellDisabled =
-              cellState !== CellState.empty || !allWinningIndices.isEmpty();
+      <Typography
+        style={{
+          writingMode: "vertical-lr",
+          transform: "rotate(180deg)",
+          textAlign: "center",
+        }}
+      >
+        {gameFinished
+          ? allWinningIndices.isEmpty()
+            ? "Game finished - it's a draw!"
+            : `Game finished - ${gameWinner}'s won!`
+          : `Let's make ${
+              userTurn === UserTurn.A ? CellState.x : CellState.o
+            }'s' rain!`}
+      </Typography>
 
-            return (
-              <ButtonBase
-                key={`${rowIndex};${colIndex}`}
-                style={{
-                  backgroundColor: allWinningIndices.has(
-                    Map({ row: rowIndex, col: colIndex })
-                  )
-                    ? "yellow"
-                    : "lightblue",
-                  width: cellWidth,
-                  height: "auto",
-                  aspectRatio: 1,
-                  borderRadius: 45,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  fontSize: (cellWidth * 2) / 3,
-                  fontWeight: 600,
-                }}
-                disabled={cellDisabled}
-                onClick={() => {
-                  // if cell is not empty, then do not do anything
-                  if (cellDisabled) return;
+      <Container
+        ref={gameContainerRef}
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: 20,
+          justifyContent: "center",
+        }}
+      >
+        {mapState.map((row, rowIndex) => (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              gap: "1rem",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {row.map((cellState, colIndex) => {
+              const cellDisabled =
+                cellState !== CellState.empty || gameFinished;
 
-                  const newValue =
-                    userTurn === UserTurn.A ? CellState.x : CellState.o;
-
-                  const newMapState = mapState.map((predRow, predRowIndex) =>
-                    predRow.map((oldCell, predColIndex) =>
-                      predRowIndex === rowIndex && predColIndex === colIndex
-                        ? newValue
-                        : oldCell
+              return (
+                <ButtonBase
+                  key={`${rowIndex};${colIndex}`}
+                  style={{
+                    backgroundColor: allWinningIndices.has(
+                      Map({ row: rowIndex, col: colIndex })
                     )
-                  );
-                  setMapState(newMapState);
+                      ? "yellow"
+                      : "lightblue",
+                    width: cellWidth,
+                    height: "auto",
+                    aspectRatio: 1,
+                    borderRadius: 45,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: (cellWidth * 2) / 3,
+                    fontWeight: 600,
+                  }}
+                  disabled={cellDisabled}
+                  onClick={() => {
+                    // if cell is not empty, then do not do anything
+                    if (cellDisabled) return;
 
-                  setUserTurn(
-                    userTurn === UserTurn.A ? UserTurn.B : UserTurn.A
-                  );
+                    const newValue =
+                      userTurn === UserTurn.A ? CellState.x : CellState.o;
 
-                  finishGameIfApplicable(newMapState);
-                }}
-              >
-                {easterEggMode ? "XD" : cellState}
-              </ButtonBase>
-            );
-          })}
-        </div>
-      ))}
+                    const newMapState = mapState.map((predRow, predRowIndex) =>
+                      predRow.map((oldCell, predColIndex) =>
+                        predRowIndex === rowIndex && predColIndex === colIndex
+                          ? newValue
+                          : oldCell
+                      )
+                    );
+                    setMapState(newMapState);
+
+                    setUserTurn(
+                      userTurn === UserTurn.A ? UserTurn.B : UserTurn.A
+                    );
+
+                    finishGameIfApplicable(newMapState);
+                  }}
+                >
+                  {easterEggMode ? "XD" : cellState}
+                </ButtonBase>
+              );
+            })}
+          </div>
+        ))}
+      </Container>
     </Container>
   );
 }
