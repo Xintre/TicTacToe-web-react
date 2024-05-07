@@ -11,9 +11,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "./context/AppContext";
 import { AppScreen } from "./types/AppScreen";
 
-export type MenuScreenProps = {};
-
-export default function MenuScreen({}: MenuScreenProps) {
+export default function MenuScreen() {
   const { mapSize, setMapSize } = useContext(AppContext);
 
   const [mapSizeInputBuffer, setMapSizeInputBuffer] = useState(() =>
@@ -22,14 +20,6 @@ export default function MenuScreen({}: MenuScreenProps) {
 
   const { setScreen } = useContext(AppContext);
 
-  // const mapSize = useMemo(
-  //   () =>
-  //     mapSizeInputBuffer.includes(".") || mapSizeInputBuffer.includes(",")
-  //       ? NaN
-  //       : Number(mapSizeInputBuffer),
-  //   [mapSizeInputBuffer]
-  // );
-
   // this effect has a one and only responsibility: to update mapSize in AppContext whenever the input buffer changes its text value
   useEffect(() => {
     setMapSize(
@@ -37,7 +27,7 @@ export default function MenuScreen({}: MenuScreenProps) {
         ? NaN
         : Number(mapSizeInputBuffer)
     );
-  }, [mapSizeInputBuffer]);
+  }, [mapSizeInputBuffer, setMapSize]);
 
   const isMapSizeInvalid = useMemo(
     () =>

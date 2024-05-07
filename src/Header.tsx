@@ -29,18 +29,16 @@ const pages: {
 
 export type HeaderProps = {
   screenTitle: string;
-  onRestart: () => void;
   hideControlButtons: boolean;
 };
 
 export default function Header({
   screenTitle,
-  onRestart,
   hideControlButtons,
 }: HeaderProps) {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
-  const { setScreen } = useContext(AppContext);
+  const { setScreen, onRestartGameListener } = useContext(AppContext);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -127,7 +125,11 @@ export default function Header({
               </Tooltip>
 
               <Tooltip arrow title="Restart game">
-                <IconButton size="large" onClick={onRestart} color="inherit">
+                <IconButton
+                  size="large"
+                  onClick={() => onRestartGameListener?.()}
+                  color="inherit"
+                >
                   <Refresh />
                 </IconButton>
               </Tooltip>
