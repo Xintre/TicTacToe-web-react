@@ -17,6 +17,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies with NPM
+        run: npm ci
 
       - name: Build React App
         run: npm run build
