@@ -1,18 +1,19 @@
-import React, { useState } from "react";
-import { Fab, Stack, ThemeProvider, createTheme } from "@mui/material";
-import { GitHub } from "@mui/icons-material";
-import { SnackbarProvider } from "notistack";
-import { deepOrange, indigo } from "@mui/material/colors";
-
-import GameScreen from "./GameScreen";
-import Header from "./Header";
-import MenuScreen from "./MenuScreen";
 import {
   AppContext,
   AppContextType,
   defaultAppContextValue,
 } from "./context/AppContext";
+import { Fab, Stack, ThemeProvider, createTheme } from "@mui/material";
+import React, { useState } from "react";
+import { deepOrange, indigo } from "@mui/material/colors";
+
 import { AppScreen } from "./types/AppScreen";
+import GameScreen from "./GameScreen";
+import { GitHub } from "@mui/icons-material";
+import Header from "./Header";
+import MenuScreen from "./MenuScreen";
+import { SnackbarProvider } from "notistack";
+import StatsScreen from "./StatsScreen";
 
 function App() {
   const [appContextValue, setAppContextValue] = useState<AppContextType>(

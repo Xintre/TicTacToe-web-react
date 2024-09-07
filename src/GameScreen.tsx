@@ -1,12 +1,12 @@
-import _ from "lodash";
 import { ButtonBase, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { Container } from "@mui/system";
 import { Map, Set } from "immutable";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useMeasure } from "@uidotdev/usehooks";
-import { useSnackbar } from "notistack";
 
 import { AppContext } from "./context/AppContext";
+import { Container } from "@mui/system";
+import _ from "lodash";
+import { useMeasure } from "@uidotdev/usehooks";
+import { useSnackbar } from "notistack";
 
 enum UserTurn {
   A,
@@ -206,6 +206,7 @@ export default function GameScreen() {
         enqueueSnackbar({
           message: `Game finished - ${gameWinner}'s won!`,
           autoHideDuration: 8000,
+          variant: "success",
         });
         setGameWinner(gameWinner);
         setGameFinished(true);
@@ -219,6 +220,7 @@ export default function GameScreen() {
 
           enqueueSnackbar({
             message: "Game finished - it's a draw!",
+            variant: "info",
           });
 
           allWinningIndices = Set<CellIndex>();
