@@ -13,6 +13,7 @@ import { GitHub } from "@mui/icons-material";
 import Header from "./Header";
 import MenuScreen from "./MenuScreen";
 import { SnackbarProvider } from "notistack";
+import { SnackbarStyledMaterialDesignContent } from "./styles/styles";
 import StatsScreen from "./StatsScreen";
 
 function App() {
@@ -29,7 +30,16 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <SnackbarProvider>
+      <SnackbarProvider
+        Components={{
+          success: SnackbarStyledMaterialDesignContent,
+          info: SnackbarStyledMaterialDesignContent,
+        }}
+        iconVariant={{
+          success: "🎉",
+          info: "😏",
+        }}
+      >
         <AppContext.Provider
           value={{
             ...appContextValue,
