@@ -3,6 +3,7 @@ import { Map, Set } from "immutable";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { AppContext } from "./context/AppContext";
+import Colors from "./styles/colors";
 import { Container } from "@mui/system";
 import _ from "lodash";
 import { useMeasure } from "@uidotdev/usehooks";
@@ -355,7 +356,7 @@ export default function GameScreen() {
                     backgroundColor: allWinningIndices.has(
                       Map({ row: rowIndex, col: colIndex })
                     )
-                      ? "yellow"
+                      ? Colors.WINNING
                       : "lightblue",
                     width: cellWidth,
                     height: "auto",

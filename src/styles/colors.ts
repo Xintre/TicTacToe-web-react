@@ -4,6 +4,7 @@ export const Colors = {
   LIGHT_CYAN: "#D4F5F5",
   CADE_GRAY: "#8C9A9E",
   GRAY: "#747578",
+  WINNING: "#E9E3B4",
 };
 
 export default Colors;

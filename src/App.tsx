@@ -5,9 +5,9 @@ import {
 } from "./context/AppContext";
 import { Fab, Stack, ThemeProvider, createTheme } from "@mui/material";
 import React, { useState } from "react";
-import { deepOrange, indigo } from "@mui/material/colors";
 
 import { AppScreen } from "./types/AppScreen";
+import Colors from "./styles/colors";
 import GameScreen from "./GameScreen";
 import { GitHub } from "@mui/icons-material";
 import Header from "./Header";
@@ -23,8 +23,12 @@ function App() {
 
   const theme = createTheme({
     palette: {
-      primary: indigo,
-      secondary: deepOrange,
+      primary: {
+        main: Colors.LIGHT_BLUE,
+      },
+      secondary: {
+        main: Colors.ROSE_EBONY,
+      },
     },
   });
 
@@ -67,12 +71,15 @@ function App() {
             <Header
               screenTitle={appContextValue.screen}
               hideControlButtons={appContextValue.screen === AppScreen.menu}
+              hideRestartButton={appContextValue.screen === AppScreen.stats}
             />
 
             {appContextValue.screen === AppScreen.menu ? (
               <MenuScreen />
-            ) : (
+            ) : appContextValue.screen === AppScreen.game ? (
               <GameScreen />
+            ) : (
+              <StatsScreen />
             )}
 
             <Fab
@@ -89,6 +96,23 @@ function App() {
             >
               <GitHub style={{ marginRight: "0.5rem" }} />
               Repository
+            </Fab>
+            <Fab
+              variant="extended"
+              style={{
+                position: "absolute",
+                left: "1rem",
+                bottom: "1rem",
+              }}
+              color="secondary"
+              onClick={() =>
+                setAppContextValue({
+                  ...appContextValue,
+                  screen: AppScreen.stats,
+                })
+              }
+            >
+              Stats📈
             </Fab>
           </Stack>
         </AppContext.Provider>

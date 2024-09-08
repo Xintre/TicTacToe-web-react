@@ -1,5 +1,3 @@
-import MenuIcon from "@mui/icons-material/Menu";
-import React, { useContext, useState } from "react";
 import {
   AppBar,
   Box,
@@ -13,11 +11,13 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import React, { useContext, useState } from "react";
 import { Refresh, Settings } from "@mui/icons-material";
 
-import icLauncher from "./img/ic_launcher.png";
 import { AppContext } from "./context/AppContext";
 import { AppScreen } from "./types/AppScreen";
+import MenuIcon from "@mui/icons-material/Menu";
+import icLauncher from "./img/ic_launcher.png";
 
 const pages: {
   text: string;
@@ -30,11 +30,13 @@ const pages: {
 export type HeaderProps = {
   screenTitle: string;
   hideControlButtons: boolean;
+  hideRestartButton: boolean;
 };
 
 export default function Header({
   screenTitle,
   hideControlButtons,
+  hideRestartButton,
 }: HeaderProps) {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
@@ -110,30 +112,44 @@ export default function Header({
           </Typography>
 
           {/* game control buttons */}
-          {!hideControlButtons && (
-            <div>
-              <Tooltip arrow title="Settings menu">
-                <IconButton
-                  size="large"
-                  onClick={() => {
-                    setScreen(AppScreen.menu);
-                  }}
-                  color="inherit"
-                >
-                  <Settings />
-                </IconButton>
-              </Tooltip>
+          {hideRestartButton ? (
+            <Tooltip arrow title="Settings menu">
+              <IconButton
+                size="large"
+                onClick={() => {
+                  setScreen(AppScreen.menu);
+                }}
+                color="inherit"
+              >
+                <Settings />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            !hideControlButtons && (
+              <div>
+                <Tooltip arrow title="Settings menu">
+                  <IconButton
+                    size="large"
+                    onClick={() => {
+                      setScreen(AppScreen.menu);
+                    }}
+                    color="inherit"
+                  >
+                    <Settings />
+                  </IconButton>
+                </Tooltip>
 
-              <Tooltip arrow title="Restart game">
-                <IconButton
-                  size="large"
-                  onClick={() => onRestartGameListener?.()}
-                  color="inherit"
-                >
-                  <Refresh />
-                </IconButton>
-              </Tooltip>
-            </div>
+                <Tooltip arrow title="Restart game">
+                  <IconButton
+                    size="large"
+                    onClick={() => onRestartGameListener?.()}
+                    color="inherit"
+                  >
+                    <Refresh />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            )
           )}
 
           {/* desktop nav */}
