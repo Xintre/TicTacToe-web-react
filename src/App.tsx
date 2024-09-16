@@ -10,7 +10,7 @@ import { AppScreen } from "./types/AppScreen";
 import Colors from "./styles/colors";
 import GameScreen from "./GameScreen";
 import { GitHub } from "@mui/icons-material";
-import Header from "./Header";
+import Header from "./components/Header";
 import MenuScreen from "./MenuScreen";
 import { SnackbarProvider } from "notistack";
 import { SnackbarStyledMaterialDesignContent } from "./styles/styles";
